@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:silvertouch_contach/ui/MainScreenUI.dart';
 import 'package:silvertouch_contach/utils/AppString.dart';
 
 import 'CategoryScreenUI.dart';
@@ -22,7 +23,7 @@ class _SplashScreenUIState extends State<SplashScreenUI> {
     super.initState();
 
     Future.delayed(Duration(seconds: 4,),(){
-      Get.off(()=> CategoryScreenUI(),);
+      Get.off(()=> MainScreenUI(),);
     });
 
   }

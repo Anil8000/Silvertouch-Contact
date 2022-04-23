@@ -4,7 +4,7 @@ class DashboardController extends GetxController{
   int bottomSelectedIndex=1;
   int drawerSelectedIndex=0;
   int selectedPageViewIndex=1;
-  String appBarTitle= "Home";
+  String appBarTitle= "Create and Store category";
 
   void updateBottomSelectedIndex(int index){
     bottomSelectedIndex=index;
@@ -16,10 +16,10 @@ void updateDrawerSelectedIndex(int index){
   //print("drawer=="+drawerSelectedIndex.toString());
 
   if(index == 0){
-    appBarTitle = "Home";
+    appBarTitle = "Create and Store category";
   }
   else if(index == 1){
-    appBarTitle = "Buy VOLTNOTE";
+    appBarTitle = "Add Contact";
   }
   else if(index == 2){
     appBarTitle = "History";

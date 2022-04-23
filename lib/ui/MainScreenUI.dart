@@ -10,13 +10,15 @@ import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/AppString.dart';
 import 'package:silvertouch_contach/widgets/CommonDrawer.dart';
 
+import 'AddContactScreenUI.dart';
+import 'ContactListScreenUI.dart';
+
 class MainScreenUI extends StatefulWidget {
   @override
   _MainScreenUIState createState() => _MainScreenUIState();
 }
 
 class _MainScreenUIState extends State<MainScreenUI> {
-  String title="Home";
   int selectedDrawerIndex=0;
 
   Future<bool> _onWillPop() {
@@ -61,9 +63,9 @@ class _MainScreenUIState extends State<MainScreenUI> {
       case 0:
         return CategoryScreenUI();
       case 1:
-        return Container();
+        return AddContactScreenUI();
       case 2:
-        return Container();
+        return ContactListScreenUI();
     }
 
   }

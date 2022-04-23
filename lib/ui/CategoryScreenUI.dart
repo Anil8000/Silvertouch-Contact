@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/widgets/CommonDrawer.dart';
@@ -22,8 +23,6 @@ class _CategoryScreenUIState extends State<CategoryScreenUI> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        drawer: CommonDrawer(),
-        appBar: AppBar(title: Text("Create and Store category"),),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -68,8 +67,8 @@ class _CategoryScreenUIState extends State<CategoryScreenUI> {
 
                               Row(
                                 children: [
-                                  Icon(Icons.mode_edit_outline_sharp),
-                                  SizedBox(width: 5,),
+                                  Icon(FontAwesomeIcons.edit,size: 19,),
+                                  SizedBox(width: 10,),
                                   Icon(Icons.delete),
                                 ],
                               ),

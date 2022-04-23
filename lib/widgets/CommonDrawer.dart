@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:silvertouch_contach/controllers/DashboardController.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
 
 class CommonDrawer extends StatefulWidget {
@@ -12,6 +13,9 @@ class CommonDrawer extends StatefulWidget {
 }
 
 class _CommonDrawerState extends State<CommonDrawer> {
+
+  DashboardController dashboardController = Get.put(DashboardController());
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -30,7 +34,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                         text: 'Add Category',
                         onTap: (){
                           Get.back();
-                          //dashboardController.updateDrawerSelectedIndex(0);
+                          dashboardController.updateDrawerSelectedIndex(0);
                         }),
 
 
@@ -40,7 +44,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                         text: 'Add Contact',
                         onTap: (){
                           Get.back();
-                          //dashboardController.updateDrawerSelectedIndex(2);
+                          dashboardController.updateDrawerSelectedIndex(1);
                           // Get.to(HistoryFragmentUI());
                         }),
 
@@ -49,7 +53,7 @@ class _CommonDrawerState extends State<CommonDrawer> {
                     _createDrawerItem(icon: Icons.settings, text: 'Contact List',
                         onTap: (){
                           Get.back();
-                          //dashboardController.updateDrawerSelectedIndex(3);
+                          dashboardController.updateDrawerSelectedIndex(2);
                           // Get.to(SettingFragmentUI());
                         }),
 
