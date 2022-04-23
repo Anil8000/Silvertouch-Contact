@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
+// ignore_for_file: prefer_const_constructors, unnecessary_new, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:get/get.dart';
 import 'package:silvertouch_contach/controllers/DashboardController.dart';
@@ -46,6 +47,23 @@ class _MainScreenUIState extends State<MainScreenUI> {
               style: TextStyle(color: Colors.white,
                   fontWeight: FontWeight.w600,fontSize: 18.0),),
             backgroundColor: AppColors.primaryColor,
+            actions: [
+
+              dashController.drawerSelectedIndex == 2
+                ? Row(
+                children: [
+                  Icon(Icons.filter_alt,color: Colors.black38,),
+
+                  SizedBox(width: 10,),
+
+                  Icon(Icons.search,color: Colors.black38,),
+
+                  SizedBox(width: 10,),
+                ],
+              )
+                : Container(),
+
+            ],
           ),
           body: WillPopScope(
 

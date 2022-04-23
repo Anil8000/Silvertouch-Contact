@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,17 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
+
+  String dropdownvalue = 'Item 1';
+
+  // List of items in our dropdown menu
+  var items = [
+    'Item 1',
+    'Item 2',
+    'Item 3',
+    'Item 4',
+    'Item 5',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -136,16 +148,6 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
           SizedBox(height: 5,),
 
           TextFormInputField(
-            hintText: "Email",
-            controller: emailController,
-            validator: (v){
-              return FieldValidator.validateValueIsEmpty(v!);
-            },
-          ),
-
-          SizedBox(height: 5,),
-
-          TextFormInputField(
             hintText: "Phone Number",
             controller: phoneNumberController,
             keyboardType: TextInputType.number,
@@ -154,6 +156,54 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
               return FieldValidator.validateValueIsEmpty(v!);
             },
           ),
+
+          SizedBox(height: 5,),
+
+          TextFormInputField(
+            hintText: "Email",
+            controller: emailController,
+            validator: (v){
+              return FieldValidator.validateValueIsEmpty(v!);
+            },
+          ),
+
+
+          SizedBox(height: 10,),
+
+
+          Padding(
+            padding: const EdgeInsets.only(left: 5.0,right: 5.0),
+            child: Container(
+              width: Get.width,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.primaryColor,width: 1),
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 5.0,right: 5.0),
+                child: DropdownButton(
+                  value: dropdownvalue,
+                  elevation: 0,
+                  underline: Container(),
+                  isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: items.map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text(items,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold)),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownvalue = newValue!;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+
+
 
           SizedBox(height: 10,),
 

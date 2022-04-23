@@ -54,25 +54,23 @@ class TextFormInputField extends StatelessWidget {
             keyboardType: keyboardType==null?TextInputType.text : keyboardType,
             maxLength: maxLength==null?null:maxLength,
             decoration:  InputDecoration(
+              fillColor: Colors.transparent,
               border: InputBorder.none,
               hintText: hintText,
               contentPadding:  EdgeInsets.symmetric(vertical: 10.0,horizontal:8.0),
               hintStyle: TextStyle(color: Colors.black87), filled: true,
               disabledBorder:OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent,width: 0.5)),
+                  borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent,width: 0.5)),
+                  borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent,width: 0.5)),
+                  borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               errorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent,width: 0.5)),
+                  borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               prefixIcon: iconPrefix==null? null: Icon(iconPrefix,color: AppColors.primaryColor),
               suffixIcon:  iconSuffix==null? null: InkWell(
                   onTap: onPressedSuffix,
                   child: Icon(iconSuffix,color: AppColors.primaryColor)),
-              /*  errorStyle: TextStyle(fontSize: 11, height: 0.3,
-               ),*/
-              //counterStyle: TextStyle(color: AppColors.primaryColor,height: 0.3),
             ),
 
 

@@ -22,10 +22,7 @@ void updateDrawerSelectedIndex(int index){
     appBarTitle = "Add Contact";
   }
   else if(index == 2){
-    appBarTitle = "History";
-  }
-  else if(index == 3){
-    appBarTitle = "Settings";
+    appBarTitle = "Contact List";
   }
   else{
     appBarTitle = "";
