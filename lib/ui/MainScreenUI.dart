@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:silvertouch_contach/controllers/DashboardController.dart';
 import 'package:silvertouch_contach/ui/CategoryScreenUI.dart';
+import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/AppString.dart';
 import 'package:silvertouch_contach/widgets/CommonDrawer.dart';
 
