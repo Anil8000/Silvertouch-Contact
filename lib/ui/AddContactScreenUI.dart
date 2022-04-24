@@ -33,18 +33,39 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   AddContactController addContactController = Get.put(AddContactController());
 
   String dropdownvalue = 'Select Category';
-  late Database database;
+  late Database database1;
+  late Database database2;
   var items = [];
 
 
   @override
   void initState() {
     super.initState();
+    tempSetData();
     createDB();
   }
 
+  tempSetData(){
+    firstNameController.text = "aa";
+    lastNameController.text = "aa";
+    emailController.text = "aa@gmail.com";
+    phoneNumberController.text = "8000808080";
+    dropdownvalue = "aaa";
+  }
+
+
   createDB() async {
-    database = await openDatabase('demo.db');
+    database1 = await openDatabase('demo.db');
+
+
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'demo1.db');
+
+    database2 = await openDatabase(path,version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute('CREATE TABLE cont (id INTEGER PRIMARY KEY,image LONGTEXT,fname TEXT,lname TEXT,ph_number TEXT,email TEXT,category TEXT)');
+      },);
+
 
     /*var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'demo.db');
@@ -59,7 +80,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   }
 
   getCategoryData() async {
-    List<Map> list = await database.rawQuery('SELECT * FROM category');
+    List<Map> list = await database1.rawQuery('SELECT * FROM category');
 
     for(int i=0 ;i<list.length; i++){
       items.add(list[i]['category_name']);
@@ -110,7 +131,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
                       controller.setUploadImage(pickedFile!.path.toString());
 
 
-                      List<int> imageBytes = File(pickedFile.path).readAsBytesSync();
+                      var imageBytes = utf8.encode(pickedFile.path);
                       String base64Image = base64.encode(imageBytes);
 
                       controller.setBase64Image(base64Image);
@@ -140,7 +161,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
                       controller.setUploadImage(pickedFile!.path);
 
 
-                      List<int> imageBytes = File(pickedFile.path).readAsBytesSync();
+                      var imageBytes = utf8.encode(pickedFile.path);
                       String base64Image = base64.encode(imageBytes);
 
                       controller.setBase64Image(base64Image);
@@ -261,7 +282,6 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
             child: RoundedButton(
               text: "Save",
               onTap: () {
-                print("DATAA");
                 if(_formKey.currentState!.validate()){
                   if(dropdownvalue == "Select Category"){
                     Fluttertoast.showToast(msg: "Please Select Category");
@@ -291,12 +311,11 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   }
 
   saveContact() async {
-      await database.transaction((txn) async {
+      await database2.transaction((txn) async {
         int id1 = await txn.rawInsert(
-            'INSERT INTO contacts (image) VALUES("abcd")');
+            'INSERT INTO cont(image,fname,lname,ph_number,email,category) VALUES("${addContactController.base64Image}","${firstNameController.text}","${lastNameController.text}","${phoneNumberController.text}","${emailController.text}","$dropdownvalue")');
         print('inserted1: $id1');
       });
-
 
       //clearData();
       setState(() {});

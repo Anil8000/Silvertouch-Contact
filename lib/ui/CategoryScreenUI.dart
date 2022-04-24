@@ -43,7 +43,7 @@ class _CategoryScreenUIState extends State<CategoryScreenUI> {
     database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute('CREATE TABLE category (id INTEGER PRIMARY KEY, category_name TEXT)');
-          await db.execute('CREATE TABLE contacts (id INTEGER PRIMARY KEY,image LONGTEXT, fname TEXT,lname TEXT, ph_number TEXT, email TEXT,category TEXT)');
+          //await db.execute('CREATE TABLE contacts (id INTEGER PRIMARY KEY,image LONGTEXT, fname TEXT,lname TEXT, ph_number TEXT, email TEXT,category TEXT)');
         },);
 
     getData();
