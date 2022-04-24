@@ -1,15 +1,9 @@
 import 'package:get/get.dart';
 
 class DashboardController extends GetxController{
-  int bottomSelectedIndex=1;
   int drawerSelectedIndex=0;
-  int selectedPageViewIndex=1;
   String appBarTitle= "Create and Store category";
 
-  void updateBottomSelectedIndex(int index){
-    bottomSelectedIndex=index;
-    update();
-  }
 
 void updateDrawerSelectedIndex(int index){
   drawerSelectedIndex=index;

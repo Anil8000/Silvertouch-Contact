@@ -31,24 +31,21 @@ class _SplashScreenUIState extends State<SplashScreenUI> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding:  EdgeInsets.all(8.0),
-        child: Container(
-          height: Get.height,
-          width: Get.width,
-          decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage("assets/images/ic_bg.jpg",),fit: BoxFit.cover)
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(AppString.imagePath +"ic_main_logo.png",),
+      body: Container(
+        height: Get.height,
+        width: Get.width,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: AssetImage("assets/images/ic_bg.jpg",),fit: BoxFit.cover)
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(AppString.imagesAssetPath +"ic_main_logo.png",),
 
-              Text(AppString.appName,style: TextStyle(fontSize: 26,fontWeight: FontWeight.bold),),
+            Text(AppString.appName,style: TextStyle(fontSize: 26,fontWeight: FontWeight.bold),),
 
 
-            ],
-          ),
+          ],
         ),
       ),
     );

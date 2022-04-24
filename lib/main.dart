@@ -20,7 +20,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           body: SplashScreenUI(),
         ),

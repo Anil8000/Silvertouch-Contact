@@ -65,6 +65,8 @@ class TextFormInputField extends StatelessWidget {
                   borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
+              focusedErrorBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: AppColors.primaryColor,width: 1),),
               prefixIcon: iconPrefix==null? null: Icon(iconPrefix,color: AppColors.primaryColor),

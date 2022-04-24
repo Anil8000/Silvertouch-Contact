@@ -1,12 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:convert';
 import 'dart:io';
-
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:silvertouch_contach/controllers/BasicsController.dart';
+import 'package:silvertouch_contach/controllers/AddContactController.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/FieldValidator.dart';
 import 'package:silvertouch_contach/widgets/RoundedButton.dart';
@@ -27,30 +30,63 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
 
-  String dropdownvalue = 'Item 1';
+  AddContactController addContactController = Get.put(AddContactController());
 
-  // List of items in our dropdown menu
-  var items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-    'Item 5',
-  ];
+  String dropdownvalue = 'Select Category';
+  late Database database;
+  var items = [];
+
+
+  @override
+  void initState() {
+    super.initState();
+    createDB();
+  }
+
+  createDB() async {
+    database = await openDatabase('demo.db');
+
+    /*var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'demo.db');
+
+    database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute('CREATE TABLE contact (id INTEGER PRIMARY KEY,image TEXT, fname TEXT,lname TEXT, ph_number TEXT, email TEXT,category TEXT)');
+        });
+*/
+
+    getCategoryData();
+  }
+
+  getCategoryData() async {
+    List<Map> list = await database.rawQuery('SELECT * FROM category');
+
+    for(int i=0 ;i<list.length; i++){
+      items.add(list[i]['category_name']);
+    }
+
+
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
+        child: Container(
+          height: Get.height,
+          width: Get.width,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
 
-              topContainer(),
-              bottomContainer(),
+                topContainer(),
+                bottomContainer(),
 
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -71,10 +107,15 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
                   ?InkWell(
                     onTap: () async {
                       final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-                      print("pickedFile  ::  $pickedFile");
-
                       controller.setUploadImage(pickedFile!.path.toString());
+
+
+                      List<int> imageBytes = File(pickedFile.path).readAsBytesSync();
+                      String base64Image = base64.encode(imageBytes);
+
+                      controller.setBase64Image(base64Image);
+                      //printWrapped("base64Image  ::  $base64Image");
+
                     },
                     child: Center(
                       child: CircleAvatar(
@@ -97,6 +138,13 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
                     onTap: () async {
                       final pickedFile = await ImagePicker().getImage(source: ImageSource.gallery);
                       controller.setUploadImage(pickedFile!.path);
+
+
+                      List<int> imageBytes = File(pickedFile.path).readAsBytesSync();
+                      String base64Image = base64.encode(imageBytes);
+
+                      controller.setBase64Image(base64Image);
+                      //printWrapped("base64Image  ::  $base64Image");
                     },
                     child: Container(
                       margin: EdgeInsets.only(right: 20),
@@ -163,7 +211,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
             hintText: "Email",
             controller: emailController,
             validator: (v){
-              return FieldValidator.validateValueIsEmpty(v!);
+              return FieldValidator.validateEmail(v!);
             },
           ),
 
@@ -182,20 +230,20 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 5.0,right: 5.0),
                 child: DropdownButton(
-                  value: dropdownvalue,
-                  elevation: 0,
+                  hint: Text(dropdownvalue,style: TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
+                  elevation: 20,
                   underline: Container(),
                   isExpanded: true,
                   icon: const Icon(Icons.keyboard_arrow_down),
-                  items: items.map((String items) {
+                  items: items.map((items) {
                     return DropdownMenuItem(
                       value: items,
                       child: Text(items,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold)),
                     );
                   }).toList(),
-                  onChanged: (String? newValue) {
+                  onChanged: (newValue) {
                     setState(() {
-                      dropdownvalue = newValue!;
+                      dropdownvalue = newValue!.toString();
                     });
                   },
                 ),
@@ -208,21 +256,29 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
           SizedBox(height: 10,),
 
 
-          InkWell(
-            onTap: () {
-              if(_formKey.currentState!.validate()){
+          Padding(
+            padding: const EdgeInsets.only(top: 15,bottom: 12,left: 8,right: 8),
+            child: RoundedButton(
+              text: "Save",
+              onTap: () {
+                print("DATAA");
+                if(_formKey.currentState!.validate()){
+                  if(dropdownvalue == "Select Category"){
+                    Fluttertoast.showToast(msg: "Please Select Category");
+                  }
+                  else{
+                    if(addContactController.img == null){
+                      Fluttertoast.showToast(msg: "Please Select Image.");
+                    }
+                    else{
+                      saveContact();
+                    }
 
-              }
-              clearData();
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 15,bottom: 12,left: 8,right: 8),
-              child: RoundedButton(
-                text: "Save",
-                onTap: () {
+                  }
 
-                },
-              ),
+                }
+                //clearData();
+              },
             ),
           ),
 
@@ -234,14 +290,30 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
     );
   }
 
+  saveContact() async {
+      await database.transaction((txn) async {
+        int id1 = await txn.rawInsert(
+            'INSERT INTO contacts (image) VALUES("abcd")');
+        print('inserted1: $id1');
+      });
+
+
+      //clearData();
+      setState(() {});
+  }
 
   clearData(){
+    addContactController.base64Image = "";
+    dropdownvalue = "Select Category";
     firstNameController.clear();
     lastNameController.clear();
     emailController.clear();
     phoneNumberController.clear();
   }
 
-
+  void printWrapped(String text) {
+    final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk
+    pattern.allMatches(text).forEach((match) => print(match.group(0)));
+  }
 
 }

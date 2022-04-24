@@ -56,11 +56,11 @@ class FieldValidator {
     return "";
   }
 
-  static String validateValueIsEmpty(String value) {
+  static String? validateValueIsEmpty(String value) {
     if (value.isEmpty) {
       return "Value is Required";
     }
-    return "";
+    return null;
   }
 
   static String? validateAddress(String? value) {

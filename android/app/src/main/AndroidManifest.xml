@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.silvertouch_contach">
    <application
-        android:label="silvertouch_contach"
+        android:label="silvertouch_contact"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
