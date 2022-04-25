@@ -2,10 +2,13 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path/path.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +17,8 @@ import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/FieldValidator.dart';
 import 'package:silvertouch_contach/widgets/RoundedButton.dart';
 import 'package:silvertouch_contach/widgets/TextFormInputField.dart';
+import 'package:contacts_service/contacts_service.dart';
+
 
 class AddContactScreenUI extends StatefulWidget {
   const AddContactScreenUI({Key? key}) : super(key: key);
@@ -41,7 +46,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   @override
   void initState() {
     super.initState();
-    tempSetData();
+    //tempSetData();
     createDB();
   }
 
@@ -311,15 +316,58 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   }
 
   saveContact() async {
+
       await database2.transaction((txn) async {
         int id1 = await txn.rawInsert(
             'INSERT INTO cont(image,fname,lname,ph_number,email,category) VALUES("${addContactController.base64Image}","${firstNameController.text}","${lastNameController.text}","${phoneNumberController.text}","${emailController.text}","$dropdownvalue")');
         print('inserted1: $id1');
       });
 
-      //clearData();
+      requestContactPermission();
+      Fluttertoast.showToast(msg: "Contact Saved");
+
+      clearData();
       setState(() {});
   }
+
+  requestContactPermission() async {
+    var request = await Permission.contacts.request();
+    if (request.isGranted) {
+      saveContactInPhone();
+    }
+    else if(request.isDenied){
+
+    }
+    else if(request.isPermanentlyDenied){
+
+    }
+
+  }
+
+
+  Future<void> saveContactInPhone() async {
+    try {
+      print("SAVED-----------");
+
+      Contact newContact = Contact();
+
+      newContact.givenName = "${firstNameController.text} ${lastNameController.text}";
+      newContact.emails = [
+        Item(label: "email", value: emailController.text)
+      ];
+      newContact.displayName = firstNameController.text;
+      newContact.middleName = lastNameController.text;
+      newContact.company = dropdownvalue;
+      newContact.phones = [
+        Item(label: "mobile", value: phoneNumberController.text)
+      ];
+      await ContactsService.addContact(newContact);
+
+    } catch (e) {
+      print(e);
+    }
+  }
+
 
   clearData(){
     addContactController.base64Image = "";

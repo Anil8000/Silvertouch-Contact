@@ -8,6 +8,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/AppString.dart';
+import 'package:silvertouch_contach/utils/FieldValidator.dart';
+import 'package:silvertouch_contach/widgets/TextFormInputField.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -20,6 +22,8 @@ class ContactListScreenUI extends StatefulWidget {
 
 class _ContactListScreenUIState extends State<ContactListScreenUI> {
 
+  TextEditingController fNameController = TextEditingController();
+  TextEditingController lNameController = TextEditingController();
   late Database database;
   var items = [];
 
@@ -100,6 +104,13 @@ class _ContactListScreenUIState extends State<ContactListScreenUI> {
                           InkWell(
                             onTap: () {
 
+                              fNameController.text = items[index].fname.toString();
+                              lNameController.text = items[index].lname.toString();
+
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context)=> editDialog(context,items[index].id.toString(),items[index].fname.toString(),items[index].lname.toString())
+                              );
                             },
                             child: Icon(FontAwesomeIcons.edit,size: 20,)
                           ),
@@ -270,11 +281,153 @@ class _ContactListScreenUIState extends State<ContactListScreenUI> {
         ));
   }
 
+  Widget editDialog(BuildContext context,String id,String fname,String lname) {
+    return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          height: 300,
+          child: Center(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              color: Colors.white,
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.primaryColor.withOpacity(0.5)),
+                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                ),
+
+                child: Form(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+
+                      new  Container(
+
+                        padding: EdgeInsets.only(
+                          bottom: 12,
+                          top: 12,
+                          left:12,
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        alignment: Alignment.center,
+                        decoration: new BoxDecoration(
+                            color:AppColors.primaryColor,
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(16),
+                                topLeft: Radius.circular(16))),
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Text(
+                            "Update",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize:20,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0,right: 12,top: 5),
+                        child: TextFormInputField(
+                          controller: fNameController,
+                          validator: (v){
+                            return FieldValidator.validateValueIsEmpty(v!);
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 12.0,right: 12,top: 5,bottom: 10),
+                        child: TextFormInputField(
+                          controller: lNameController,
+                          validator: (v){
+                            return FieldValidator.validateValueIsEmpty(v!);
+                          },
+                        ),
+                      ),
+
+                      new Container(
+                        height:3,
+                        color: AppColors.primaryColor,
+                      ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                editData(id,fNameController.text,lNameController.text);
+                                Get.back();
+                              },
+                              child: Container(
+                                height: 44,
+                                padding: EdgeInsets.only(
+                                    top: 12,
+                                    bottom: 12),
+                                child: Center(
+                                  child: new Text(
+                                    'Save',
+                                    style: TextStyle(
+                                        fontSize:16,
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          new Container(
+                            width: 3,
+                            height: 40,
+                            color: AppColors.primaryColor,
+                          ),
+
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                Get.back();
+
+                              },
+                              child: Container(
+                                height: 44,
+                                padding: EdgeInsets.only(
+                                    top: 12,
+                                    bottom:12),
+                                child: Center(
+                                  child: new Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color:AppColors.primaryColor,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ));
+  }
 
 
-
-  editData(String id, String newCategory) async {
-    //await database.rawUpdate('UPDATE cont SET category_name = "$newCategory" AND WHERE id = "$id"');
+  editData(String id, String fName, String lName) async {
+    await database.rawUpdate('UPDATE cont SET fname = "$fName" , lname = "$lName" WHERE id = "$id"');
     getContactData();
   }
 
@@ -295,6 +448,5 @@ class ContactData{
 ///pending task
 
 ///add contact to system Contact
-///edit contact
 ///search
 ///filter

@@ -56,7 +56,7 @@ class _MainScreenUIState extends State<MainScreenUI> {
 
                   SizedBox(width: 10,),
 
-                  Icon(Icons.search,color: Colors.black38,),
+                 /* Icon(Icons.search,color: Colors.black38,),*/
 
                   SizedBox(width: 10,),
                 ],
