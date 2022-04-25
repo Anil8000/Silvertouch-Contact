@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:get/get.dart';
+import 'package:silvertouch_contach/controllers/AddContactController.dart';
+import 'package:silvertouch_contach/controllers/ContactListController.dart';
 import 'package:silvertouch_contach/controllers/DashboardController.dart';
 import 'package:silvertouch_contach/ui/CategoryScreenUI.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
@@ -22,6 +24,11 @@ class MainScreenUI extends StatefulWidget {
 class _MainScreenUIState extends State<MainScreenUI> {
   int selectedDrawerIndex=0;
 
+  List<String> items = [];
+
+  String dropdownvalue = 'Select category';
+  AddContactController addContactController = Get.put(AddContactController());
+
   Future<bool> _onWillPop() {
     showDialog(
         context: context,
@@ -29,6 +36,7 @@ class _MainScreenUIState extends State<MainScreenUI> {
     );
     return Future<bool>.value(true);
   }
+
 
 
   @override
@@ -52,11 +60,32 @@ class _MainScreenUIState extends State<MainScreenUI> {
               dashController.drawerSelectedIndex == 2
                 ? Row(
                 children: [
-                  Icon(Icons.filter_alt,color: Colors.black38,),
+                  InkWell(
+                    onTap: () {
+                      items.clear();
+                      items.addAll(addContactController.categoryList);
+                      setState(() {
+                      });
+                      showFilterDialog(context);
 
-                  SizedBox(width: 10,),
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.filter_alt,color: Colors.black38,),
+                    ),
+                  ),
 
-                 /* Icon(Icons.search,color: Colors.black38,),*/
+
+
+                  InkWell(
+                    onTap: () {
+
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(Icons.search,color: Colors.black38,),
+                    ),
+                  ),
 
                   SizedBox(width: 10,),
                 ],
@@ -220,5 +249,59 @@ class _MainScreenUIState extends State<MainScreenUI> {
           ),
         ));
   }
-}
+
+
+
+
+  showFilterDialog(BuildContext context) {
+    // Create button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    AlertDialog alert = AlertDialog(
+      title: Text("Category Filter"),
+      content:  GetBuilder(
+        init: ContactListController(),
+        builder: (ContactListController controller) {
+          return DropdownButton(
+            hint: Text(controller.filterTitle,style: TextStyle(color: AppColors.primaryColor,fontWeight: FontWeight.bold),),
+            elevation: 20,
+            underline: Container(),
+            isExpanded: true,
+            icon: const Icon(Icons.keyboard_arrow_down),
+            items: items.map((items) {
+              return DropdownMenuItem(
+                value: items,
+                child: Text(items,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold)),
+              );
+            }).toList(),
+            onChanged: (newValue) {
+              setState(() {
+                dropdownvalue = newValue!.toString();
+                controller.updateFilterTitle(newValue.toString());
+
+              });
+            },
+          );
+        },
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  }
 

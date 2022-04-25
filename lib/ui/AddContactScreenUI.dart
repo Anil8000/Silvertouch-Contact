@@ -40,28 +40,18 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   String dropdownvalue = 'Select Category';
   late Database database1;
   late Database database2;
-  var items = [];
+  //var items = [];
 
 
   @override
   void initState() {
     super.initState();
-    //tempSetData();
     createDB();
-  }
-
-  tempSetData(){
-    firstNameController.text = "aa";
-    lastNameController.text = "aa";
-    emailController.text = "aa@gmail.com";
-    phoneNumberController.text = "8000808080";
-    dropdownvalue = "aaa";
   }
 
 
   createDB() async {
     database1 = await openDatabase('demo.db');
-
 
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'demo1.db');
@@ -72,23 +62,15 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
       },);
 
 
-    /*var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'demo.db');
-
-    database = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute('CREATE TABLE contact (id INTEGER PRIMARY KEY,image TEXT, fname TEXT,lname TEXT, ph_number TEXT, email TEXT,category TEXT)');
-        });
-*/
-
     getCategoryData();
   }
 
   getCategoryData() async {
     List<Map> list = await database1.rawQuery('SELECT * FROM category');
 
+    addContactController.categoryList.clear();
     for(int i=0 ;i<list.length; i++){
-      items.add(list[i]['category_name']);
+      addContactController.categoryList.add(list[i]['category_name']);
     }
 
 
@@ -261,7 +243,7 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
                   underline: Container(),
                   isExpanded: true,
                   icon: const Icon(Icons.keyboard_arrow_down),
-                  items: items.map((items) {
+                  items: addContactController.categoryList.map((items) {
                     return DropdownMenuItem(
                       value: items,
                       child: Text(items,style: TextStyle(color: Colors.black87,fontWeight: FontWeight.bold)),
@@ -323,45 +305,60 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
         print('inserted1: $id1');
       });
 
-      requestContactPermission();
+      saveContactInPhone().then((value) {
+        clearData();
+      });
       Fluttertoast.showToast(msg: "Contact Saved");
 
-      clearData();
+
       setState(() {});
-  }
-
-  requestContactPermission() async {
-    var request = await Permission.contacts.request();
-    if (request.isGranted) {
-      saveContactInPhone();
-    }
-    else if(request.isDenied){
-
-    }
-    else if(request.isPermanentlyDenied){
-
-    }
-
   }
 
 
   Future<void> saveContactInPhone() async {
     try {
-      print("SAVED-----------");
 
-      Contact newContact = Contact();
+      print("saving Conatct");
+      PermissionStatus permission = await Permission.contacts.status;
 
-      newContact.givenName = "${firstNameController.text} ${lastNameController.text}";
-      newContact.emails = [
-        Item(label: "email", value: emailController.text)
-      ];
-      newContact.displayName = firstNameController.text;
-      newContact.middleName = lastNameController.text;
-      newContact.company = dropdownvalue;
-      newContact.phones = [
-        Item(label: "mobile", value: phoneNumberController.text)
-      ];
-      await ContactsService.addContact(newContact);
+      if (permission != PermissionStatus.granted) {
+        await Permission.contacts.request();
+        PermissionStatus permission = await Permission.contacts.status;
+
+        if (permission == PermissionStatus.granted) {
+          Contact newContact = new Contact();
+          newContact.givenName = "${firstNameController.text}  ${lastNameController.text}";
+          newContact.emails = [
+            Item(label: "email", value: "${emailController.text}")
+          ];
+          newContact.company = "";
+          newContact.phones = [
+            Item(label: "mobile", value: "${phoneNumberController.text}")
+          ];
+          newContact.postalAddresses = [
+            PostalAddress(region: "")
+          ];
+          await ContactsService.addContact(newContact);
+
+        } else {
+          //_handleInvalidPermissions(context);
+        }
+      } else {
+        Contact newContact = new Contact();
+        newContact.givenName = "${firstNameController.text}  ${lastNameController.text}";
+        newContact.emails = [
+          Item(label: "email", value: "${emailController.text}")
+        ];
+        newContact.company = "";
+        newContact.phones = [
+          Item(label: "mobile", value: "${phoneNumberController.text}")
+        ];
+        newContact.postalAddresses = [
+          PostalAddress(region: "")
+        ];
+        await ContactsService.addContact(newContact);
+      }
+      print("object");
 
     } catch (e) {
       print(e);
@@ -369,14 +366,22 @@ class _AddContactScreenUIState extends State<AddContactScreenUI> {
   }
 
 
+
   clearData(){
-    addContactController.base64Image = "";
+    addContactController.base64Image = null;
+    addContactController.img = null;
+
     dropdownvalue = "Select Category";
     firstNameController.clear();
     lastNameController.clear();
     emailController.clear();
     phoneNumberController.clear();
+    setState(() {
+
+    });
   }
+
+
 
   void printWrapped(String text) {
     final pattern = RegExp('.{1,800}'); // 800 is the size of each chunk

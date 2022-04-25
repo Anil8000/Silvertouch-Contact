@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:silvertouch_contach/controllers/AddContactController.dart';
+import 'package:silvertouch_contach/controllers/ContactListController.dart';
 import 'package:silvertouch_contach/utils/AppColors.dart';
 import 'package:silvertouch_contach/utils/AppString.dart';
 import 'package:silvertouch_contach/utils/FieldValidator.dart';
@@ -17,52 +19,59 @@ class ContactListScreenUI extends StatefulWidget {
   const ContactListScreenUI({Key? key}) : super(key: key);
 
   @override
-  State<ContactListScreenUI> createState() => _ContactListScreenUIState();
+  State<ContactListScreenUI> createState() => ContactListScreenUIState();
 }
 
-class _ContactListScreenUIState extends State<ContactListScreenUI> {
+class ContactListScreenUIState extends State<ContactListScreenUI> {
 
   TextEditingController fNameController = TextEditingController();
   TextEditingController lNameController = TextEditingController();
-  late Database database;
+  ContactListController contactListController = Get.put(ContactListController());
+  AddContactController addContactController = Get.put(AddContactController());
+
+  late Database database1;
+  late Database database2;
   var items = [];
 
   @override
   void initState() {
     super.initState();
     createDB();
-    setState(() {
-    });
   }
 
 
   createDB() async {
-    database = await openDatabase('demo1.db');
+    print("REFRESH FILTER");
+    database1 = await openDatabase('demo.db');
+    database2 = await openDatabase('demo1.db');
     getContactData();
-    //deleteData();
+    getCategoryData();
+  }
+
+  getCategoryData() async {
+    List<Map> list = await database1.rawQuery('SELECT * FROM category');
+
+
+    addContactController.categoryList.clear();
+    for(int i=0 ;i<list.length; i++){
+      addContactController.categoryList.add(list[i]['category_name']);
+    }
   }
 
   deleteData(String id) async {
-    await database.rawDelete('DELETE FROM cont WHERE id = $id');
+    await database2.rawDelete('DELETE FROM cont WHERE id = $id');
     getContactData();
   }
 
   getContactData() async {
     items.clear();
-    List<Map> list = await database.rawQuery('SELECT * FROM cont');
-    print("list  ::  $list");
-    print("list  ::  ${list.length}");
+    List<Map> list = await database2.rawQuery('SELECT * FROM cont');
 
     if(list.isNotEmpty){
       for(int i=0 ;i<list.length; i++){
         items.add(ContactData(id: list[i]['id'].toString(), image: utf8.decode(base64.decode(list[i]['image'])) ,fname: list[i]['fname'].toString(),lname: list[i]['lname'].toString()));
       }
     }
-
-    /*for(int i=0 ;i<list.length; i++){
-      print("IDDD  ::  ${items[i].id.toString()}");
-    }*/
-
 
     setState(() {});
   }
@@ -427,7 +436,7 @@ class _ContactListScreenUIState extends State<ContactListScreenUI> {
 
 
   editData(String id, String fName, String lName) async {
-    await database.rawUpdate('UPDATE cont SET fname = "$fName" , lname = "$lName" WHERE id = "$id"');
+    await database2.rawUpdate('UPDATE cont SET fname = "$fName" , lname = "$lName" WHERE id = "$id"');
     getContactData();
   }
 
@@ -447,6 +456,5 @@ class ContactData{
 
 ///pending task
 
-///add contact to system Contact
 ///search
 ///filter
